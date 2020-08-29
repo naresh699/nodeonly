@@ -3,6 +3,7 @@
  *
  */
 
+
 //  dependency
 var http = require("http");
 var https = require("https");
@@ -20,8 +21,8 @@ httpServer.listen(config.httpPort, function () {
 });
 
 var httpsServerOptions = {
-  'key' : fs.readFileSync('./https/server.key'),
-  'cert' :fs.readFileSync('./https/server.cert'),
+  key : fs.readFileSync('./https/server.key'),
+  cert :fs.readFileSync('./https/server.cert'),
 }
 
 var httpsServer = https.createServer(httpsServerOptions, function (req, res) {
@@ -60,26 +61,31 @@ var unifiedServer  =  function (req, res){
       payload: buffer
     }
     chosenHandler(data, function(statusCode, payload){
-       statusCode = typeof(statusCode) === 'number' ? statusCode : 200
+       statusCode = typeof(statusCode) == 'number' ? statusCode : 200
        payload = typeof(payload) == 'object' ? payload : {}
        payloadString = JSON.stringify(payload)
 
        res.setHeader('Content-Type', 'application/json')
        res.writeHead(statusCode)
-       res.end(payloadString)
-       console.log(`we r returning the ${payloadString} , ${statusCode}`)
+       // hello router send welcome msg , for rest send default
+
+      res.end(payloadString)
+
+       //console.log(`we r returning the ${data.trimmedPath} , ${statusCode}`)
     })
-
-
   })
 }
 
 
 //fine the handler
-handlers = {}
+var handlers = {}
 
-handlers.sample = function(data, callback){
-  callback(406, {'name': 'sample handler'})
+handlers.ping = function(data, callback) {
+  callback(200)
+}
+
+handlers.hello = function(data, callback) {
+  callback(200)
 }
 
 handlers.notFound = function(data, callback){
@@ -87,5 +93,6 @@ handlers.notFound = function(data, callback){
 }
 // defining the router
 var router = {
-  'sample': handlers.sample
+  'ping': handlers.ping,
+  'hello': handlers.hello
 }
